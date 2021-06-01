@@ -1,0 +1,3 @@
+reynir-correct
+fastapi
+uvicorn
