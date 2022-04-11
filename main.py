@@ -5,6 +5,9 @@ from typing import Optional
 from fastapi import FastAPI
 from fastapi.responses import Response, JSONResponse, HTMLResponse
 
+from pydantic import BaseModel
+from typing import Optional
+
 from reynir_correct import check_single
 from reynir_correct import tokenize
 
@@ -32,19 +35,19 @@ def root() -> str:
         __version__
     )
 
-@app.get("/spellchecker/tokens")
-def tokens(text : str):
-    g = tokenize(text)
-    out = []
-    for tok in g:
-        out += [[tok.txt, tok.error_description]]
-    return JSONResponse(content=out)
-        
+class SpellcheckInput(BaseModel):
+    type: Optional[str] = "text"
+    content: str
 
-@app.get("/spellchecker/full")
-def full(text: str, annotations : Optional[bool] = False):
-    sent = check_single(text)
-    if annotations:
-        return JSONResponse(content=[sent.tidy_text, [str(ann) for ann in sent.annotations]])
-    else: 
-        return JSONResponse(content=sent.tidy_text)
+@app.post("/spellchecker")
+def spellcheck(text: SpellcheckInput):
+    sent = check_single(text.content)
+    annotation = []
+    for ann in sent.annotations:
+        ann = str(ann)
+        start = int(ann[:3])
+        end = int(ann[4:7])
+        annotation.append({"start": start, "end":end, "features":{"correction":ann[9:]}})
+    texts = [{ "content":sent.tidy_text,"annotations":{"corrections":annotation} }]
+    return JSONResponse(content={"response":{"type":"texts", "texts":texts}})
+
