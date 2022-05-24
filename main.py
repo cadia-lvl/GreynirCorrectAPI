@@ -50,10 +50,7 @@ def spellcheck(text: SpellcheckInput):
     
         annotation = []
         for ann in sentence.annotations:
-            ann = str(ann)
-            start = int(ann[:3])
-            end = int(ann[4:7])+1
-            annotation.append({"start": start, "end":end, "features":{"correction":ann[9:]}})
+            annotation.append({"start": ann.start, "end": ann.end+1, "features":{"code": ann.code, "text": ann.text, "original": ann.original, "suggest": ann.suggest}})
         resp.append({'type': 'texts', 'texts': texts,"annotations":{"corrections":annotation}})
     return JSONResponse(content={"response":{"type":"texts", 'texts':resp}})
 
