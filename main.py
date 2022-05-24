@@ -8,7 +8,7 @@ from fastapi.responses import Response, JSONResponse, HTMLResponse
 from pydantic import BaseModel
 from typing import Optional
 
-from reynir_correct import check_single
+from reynir_correct import check
 from reynir_correct import tokenize
 
 __version__ = 0.1
@@ -41,13 +41,19 @@ class SpellcheckInput(BaseModel):
 
 @app.post("/spellchecker")
 def spellcheck(text: SpellcheckInput):
-    sent = check_single(text.content)
-    annotation = []
-    for ann in sent.annotations:
-        ann = str(ann)
-        start = int(ann[:3])
-        end = int(ann[4:7])
-        annotation.append({"start": start, "end":end, "features":{"correction":ann[9:]}})
-    texts = [{ "content":sent.tidy_text,"annotations":{"corrections":annotation} }]
-    return JSONResponse(content={"response":{"type":"texts", "texts":texts}})
+    g = list(check(text.content))[0]
+    resp = []
+    for sentence in g.sentences():
+        texts = []
+        for token in sentence.tokens:
+            texts.append({'content':token.txt})
+    
+        annotation = []
+        for ann in sentence.annotations:
+            ann = str(ann)
+            start = int(ann[:3])
+            end = int(ann[4:7])+1
+            annotation.append({"start": start, "end":end, "features":{"correction":ann[9:]}})
+        resp.append({'type': 'texts', 'texts': texts,"annotations":{"corrections":annotation}})
+    return JSONResponse(content={"response":{"type":"texts", 'texts':resp}})
 
