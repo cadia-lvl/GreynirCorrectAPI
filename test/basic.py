@@ -3,7 +3,7 @@ import requests
 import json
 
 LOC="/spellchecker"
-LOC="/process/service"
+#LOC="/process/service"
 
 
 inp = "Páli, vini mínum, langaði að horfa á sjónnvarpið. Hversu oft harfir hann á sjónvarpið?"
