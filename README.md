@@ -25,3 +25,6 @@ test files can be found in `test/`. There are two tests that can be performed.
 [Reykjavik University](https://lvl.ru.is)
 
 This ELG API was developed in EU's CEF project: [Microservices at your service](https://www.lingsoft.fi/en/microservices-at-your-service-bridging-gap-between-nlp-research-and-industry)
+
+# Underlying tool
+The underlying tool is [GreynirCorrect](https://github.com/mideind/GreynirCorrect) by [Miðeind](https://mideind.is/), which is licensed under this [MIT license](https://github.com/mideind/GreynirCorrect/blob/master/LICENSE). The ELG API implementation imports the corresponding [PyPi package](https://pypi.org/project/reynir-correct/).
